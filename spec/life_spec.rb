@@ -160,7 +160,7 @@ HERE
       expect { output.string == expected_output }
     end
 
-    pending "in the next generation it looks like this" do
+    it "in the next generation it looks like this" do
       output = StringIO.new
       subject.tick.print_to output
       expected_output = <<HERE

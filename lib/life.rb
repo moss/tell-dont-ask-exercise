@@ -27,7 +27,7 @@ class Alive
   end
 
   def if_density_appropriate density
-    density.if_generates_life { yield }
+    density.if_supports_life { yield }
     return self
   end
 end
