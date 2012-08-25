@@ -81,20 +81,17 @@ describe Cell do
 end
 
 describe Board do
+  def check_output expected_output
+    output = StringIO.new
+    subject.print_to output
+    expect { output.string == expected_output }
+  end
+
   context "with no cells on it" do
     subject { Board.new() }
 
     it "prints a grid of empty cells to a stream" do
-      output = StringIO.new
-      subject.print_to output
-      expected_output = <<HERE
-.....
-.....
-.....
-.....
-.....
-HERE
-      expect { output.string == expected_output }
+      check_output ".....\n" * 5
     end
   end
 
@@ -104,16 +101,13 @@ HERE
     end
     
     it "prints a grid of cells to a stream" do
-      output = StringIO.new
-      subject.print_to output
-      expected_output = <<HERE
+      check_output <<HERE
 .....
 ..X..
 .....
 .....
 ....X
 HERE
-      expect { output.string == expected_output }
     end
   end
 
@@ -121,9 +115,8 @@ HERE
     subject { Board.new([1, 1]) }
     
     it "will be empty in the next generation" do
-      output = StringIO.new
-      subject.tick.print_to output
-      expect { output.string == ".....\n" * 5 }
+      subject.tick
+      check_output ".....\n" * 5
     end
   end
 
@@ -131,16 +124,14 @@ HERE
     subject { Board.new([1, 1], [2, 1], [1, 2], [2, 2]) }
 
     it "does not change in the next generation" do
-      output = StringIO.new
-      subject.tick.print_to output
-      expected_output = <<HERE
+      subject.tick
+      check_output <<HERE
 .....
 .XX..
 .XX..
 .....
 .....
 HERE
-      expect { output.string == expected_output }
     end
   end
 
@@ -148,29 +139,24 @@ HERE
     subject { Board.new([1, 2], [2, 2], [3, 2]) }
 
     it "starts out looking like this" do
-      output = StringIO.new
-      subject.print_to output
-      expected_output = <<HERE
+      check_output <<HERE
 .....
 .....
 .XXX.
 .....
 .....
 HERE
-      expect { output.string == expected_output }
     end
 
     it "in the next generation it looks like this" do
-      output = StringIO.new
-      subject.tick.print_to output
-      expected_output = <<HERE
+      subject.tick
+      check_output <<HERE
 .....
 ..X..
 ..X..
 ..X..
 .....
 HERE
-      expect { output.string == expected_output }
     end
   end
 end
