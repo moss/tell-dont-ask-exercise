@@ -106,17 +106,6 @@ HERE
   end
 end
 
-describe FutureCell do
-  let (:next_generation) { Set.new }
-  subject { FutureCell.new([2, 3], next_generation) }
-
-  it "adds itself to the next generation if alive" do
-    expect { !next_generation.include? [2, 3] }
-    subject.live!
-    expect { next_generation.include? [2, 3] }
-  end
-end
-
 
 
 

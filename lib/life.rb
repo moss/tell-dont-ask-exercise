@@ -42,15 +42,3 @@ class Board
     @cell_hash[[x, y]].print_to stream
   end
 end
-
-class FutureCell
-  def initialize coordinates_tuple, next_generation
-    @coordinates_tuple = coordinates_tuple
-    @next_generation = next_generation
-  end
-
-  def live!
-    @next_generation.add @coordinates_tuple
-    return self
-  end
-end
