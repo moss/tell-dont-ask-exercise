@@ -34,6 +34,8 @@ end
 
 class Cell
   def initialize coordinates, board_hash
+    @x = coordinates[0]
+    @y = coordinates[1]
     @xy = coordinates
     @board_hash = board_hash
     @aliveness = Dead.new
@@ -72,16 +74,19 @@ class Cell
   end
 
   def each_neighbor
-    [
-      [@xy[0]-1, @xy[1]-1],
-      [@xy[0]-1, @xy[1]],
-      [@xy[0]-1, @xy[1]+1],
-      [@xy[0], @xy[1]-1],
-      [@xy[0], @xy[1]+1],
-      [@xy[0]+1, @xy[1]-1],
-      [@xy[0]+1, @xy[1]],
-      [@xy[0]+1, @xy[1]+1]
-    ].each {|coordinates| yield @board_hash[coordinates] }
+    everyone_in_neighborhood do |cell|
+      yield cell unless cell == self
+    end
+  end
+
+  def everyone_in_neighborhood
+    offsets do |xoffset|
+      offsets {|yoffset| yield @board_hash[[@x + xoffset, @y + yoffset]] }
+    end
+  end
+
+  def offsets &block
+    [-1, 0, 1].each(&block)
     return self
   end
 end

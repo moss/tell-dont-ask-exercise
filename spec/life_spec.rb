@@ -47,7 +47,7 @@ describe PopulationDensity do
 end
 
 describe Cell do
-  subject { Cell.new(nil, nil) }
+  subject { Cell.new([nil, nil], nil) }
 
   context "not alive" do
     it "should render as ." do
