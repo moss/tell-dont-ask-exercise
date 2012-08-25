@@ -35,8 +35,7 @@ end
 
 class Cell
   def initialize coordinates, board_hash
-    @x, @y = coordinates
-    @board_hash = board_hash
+    @neighborhood = Neighborhood.new(board_hash, coordinates[0], coordinates[1])
     @aliveness = Dead.new
   end
 
@@ -62,7 +61,8 @@ class Cell
   end
 
   def count_neighbors density
-    each_neighbor {|neighbor| neighbor.update_neighbor_count density }
+    @neighborhood.neighbors {|neighbor| neighbor.update_neighbor_count density }
+    return self
   end
 
   private
@@ -71,17 +71,26 @@ class Cell
     @aliveness.if_density_appropriate(density) { cell.live! }
     return self
   end
+end
 
-  def each_neighbor
-    everyone_in_neighborhood do |cell|
-      yield cell unless cell == self
+class Neighborhood
+  def initialize board_hash, x, y
+    @board_hash = board_hash
+    @x = x
+    @y = y
+  end
+
+  def neighbors &block
+    offsets do |xoffset|
+      offsets {|yoffset| process_neighbor xoffset, yoffset, &block }
     end
   end
 
-  def everyone_in_neighborhood
-    offsets do |xoffset|
-      offsets {|yoffset| yield @board_hash[[@x + xoffset, @y + yoffset]] }
-    end
+  private
+
+  def process_neighbor xoffset, yoffset
+    yield @board_hash[[@x + xoffset, @y + yoffset]] unless xoffset == 0 && yoffset == 0
+    return self
   end
 
   def offsets &block
