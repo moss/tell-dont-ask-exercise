@@ -75,6 +75,23 @@ HERE
     end
   end
 
+  context "with a two by two square on it" do
+    subject { Board.new([1, 1], [2, 1], [1, 2], [2, 2]) }
+
+    it "does not change in the next generation" do
+      output = StringIO.new
+      subject.tick.print_to output
+      expected_output = <<HERE
+.....
+.XX..
+.XX..
+.....
+.....
+HERE
+      expect { output.string == expected_output }
+    end
+  end
+
   context "with a blinker" do
     subject { Board.new([1, 2], [2, 2], [3, 2]) }
 

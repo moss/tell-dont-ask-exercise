@@ -18,7 +18,8 @@ end
 
 class Board
   def initialize(*cell_coordinate_tuples)
-    @cell_hash = Hash.new {|hash, tuple| hash[tuple] = Cell.new(tuple, hash) }
+    create_next_generation
+    advance_current_generation
     cell_coordinate_tuples.each {|tuple| @cell_hash[tuple].live! }
   end
 
@@ -28,12 +29,27 @@ class Board
   end
 
   def tick
-    next_generation = Hash.new {|hash, tuple| hash[tuple] = Cell.new(tuple, hash) }
-    @cell_hash = next_generation
-    return self
+    create_next_generation
+    calculate_next_generation
+    advance_current_generation
   end
 
   private 
+
+  def create_next_generation
+    @next_generation = Hash.new {|hash, tuple| hash[tuple] = Cell.new(tuple, hash) }
+    return self
+  end
+
+  def calculate_next_generation
+
+    return self
+  end
+
+  def advance_current_generation
+    @cell_hash = @next_generation
+    return self
+  end
 
   def each_interesting_position
     (0..4).each {|y| (0..4).each {|x| yield [x, y] } }
