@@ -7,6 +7,7 @@ class Dead
   end
 
   def update_count count
+    return self
   end
 
   def if_density_appropriate density
@@ -34,9 +35,7 @@ end
 
 class Cell
   def initialize coordinates, board_hash
-    @x = coordinates[0]
-    @y = coordinates[1]
-    @xy = coordinates
+    @x, @y = coordinates
     @board_hash = board_hash
     @aliveness = Dead.new
   end
