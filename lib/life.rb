@@ -50,10 +50,10 @@ class Cell
     return self
   end
 
-  def if_lives
+  def update_future_self cell
     density = PopulationDensity.new
     count_neighbors density
-    if_density_appropriate(density) { yield }
+    update_cell_based_on_density(density, cell)
   end
 
   def update_neighbor_count count
@@ -67,8 +67,8 @@ class Cell
 
   private
 
-  def if_density_appropriate density
-    @aliveness.if_density_appropriate(density) { yield }
+  def update_cell_based_on_density density, cell
+    @aliveness.if_density_appropriate(density) { cell.live! }
     return self
   end
 
@@ -138,7 +138,7 @@ class Board
 
   def calculate_next_generation
     each_interesting_position do |tuple|
-      @cell_hash[tuple].if_lives { @next_generation[tuple].live! }
+      @cell_hash[tuple].update_future_self(@next_generation[tuple])
     end
   end
 
