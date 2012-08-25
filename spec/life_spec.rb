@@ -6,6 +6,28 @@ require 'rspec'
 require "wrong/adapters/rspec"
 Wrong.config.alias_assert :expect, :override => true
 
+describe Cell do
+  subject { Cell.new(nil, nil) }
+
+  context "not alive" do
+    it "should render as ." do
+      output = StringIO.new
+      subject.print_to output
+      expect { output.string == '.' }
+    end
+  end
+
+  context "alive" do
+    before { subject.live! }
+
+    it "should render as X" do
+      output = StringIO.new
+      subject.print_to output
+      expect { output.string == 'X' }
+    end
+  end
+end
+
 describe Board do
   context "with no cells on it" do
     subject { Board.new() }
