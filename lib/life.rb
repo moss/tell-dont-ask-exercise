@@ -2,17 +2,66 @@ require 'set'
 
 class Cell
   def initialize coordinates, board_hash
-    @representation = '.'
+    @xy = coordinates
+    @board_hash = board_hash
+    @alive = false
   end
 
   def print_to output
-    output.printf @representation
+    output.printf @alive ? 'X' : '.'
     return self
   end
 
   def live!
-    @representation = 'X'
+    @alive = true
     return self
+  end
+
+  def if_lives
+    density = PopulationDensity.new
+    count_neighbors density
+    density.if_lively { yield }
+    return self
+  end
+
+  def update_neighbor_count count
+    count.increment if @alive
+    return self
+  end
+
+  def count_neighbors density
+    each_neighbor {|neighbor| neighbor.update_neighbor_count density }
+  end
+
+  private
+
+  def each_neighbor
+    [
+      [@xy[0]-1, @xy[1]-1],
+      [@xy[0]-1, @xy[1]],
+      [@xy[0]-1, @xy[1]+1],
+      [@xy[0], @xy[1]-1],
+      [@xy[0], @xy[1]+1],
+      [@xy[0]+1, @xy[1]-1],
+      [@xy[0]+1, @xy[1]],
+      [@xy[0]+1, @xy[1]+1]
+    ].each {|coordinates| yield @board_hash[coordinates] }
+    return self
+  end
+end
+
+class PopulationDensity
+  def initialize
+    @count = 0
+  end
+
+  def increment
+    @count += 1
+    return self
+  end
+  
+  def if_lively
+    yield if @count == 3
   end
 end
 
@@ -42,8 +91,9 @@ class Board
   end
 
   def calculate_next_generation
-
-    return self
+    each_interesting_position do |tuple|
+      @cell_hash[tuple].if_lives { @next_generation[tuple].live! }
+    end
   end
 
   def advance_current_generation
@@ -53,6 +103,7 @@ class Board
 
   def each_interesting_position
     (0..4).each {|y| (0..4).each {|x| yield [x, y] } }
+    return self
   end
 
   def print_row y, stream

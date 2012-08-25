@@ -6,6 +6,30 @@ require 'rspec'
 require "wrong/adapters/rspec"
 Wrong.config.alias_assert :expect, :override => true
 
+describe PopulationDensity do
+  subject { PopulationDensity.new }
+
+  context "with two neighbors" do
+    before { subject.increment.increment }
+
+    it "is not lively" do
+      lively = false
+      subject.if_lively { lively = true }
+      expect { !lively }
+    end
+  end
+
+  context "with three neighbors" do
+    before { subject.increment.increment.increment }
+
+    it "is lively" do
+      lively = false
+      subject.if_lively { lively = true }
+      expect { lively }
+    end
+  end
+end
+
 describe Cell do
   subject { Cell.new(nil, nil) }
 
@@ -14,6 +38,12 @@ describe Cell do
       output = StringIO.new
       subject.print_to output
       expect { output.string == '.' }
+    end
+
+    it "should not increment the neighbor count" do
+      count = double('neighbor count')
+      count.should_not_receive(:increment)
+      subject.update_neighbor_count count
     end
   end
 
@@ -24,6 +54,12 @@ describe Cell do
       output = StringIO.new
       subject.print_to output
       expect { output.string == 'X' }
+    end
+
+    it "should increment the neighbor count" do
+      count = double('neighbor count')
+      count.should_receive(:increment)
+      subject.update_neighbor_count count
     end
   end
 end
