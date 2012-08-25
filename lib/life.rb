@@ -74,8 +74,8 @@ class Cell
 end
 
 class Neighborhood
-  def initialize board_hash, coordinates
-    @board_hash = board_hash
+  def initialize generation, coordinates
+    @generation = generation
     @x, @y = coordinates
   end
 
@@ -87,8 +87,8 @@ class Neighborhood
 
   private
 
-  def process_neighbor xoffset, yoffset
-    yield @board_hash[[@x + xoffset, @y + yoffset]] unless xoffset == 0 && yoffset == 0
+  def process_neighbor xoffset, yoffset, &block
+    @generation.process(Position.new(@x + xoffset, @y + yoffset), &block) unless xoffset == 0 && yoffset == 0
     return self
   end
 
@@ -123,7 +123,7 @@ class Board
   def initialize(*cell_coordinate_tuples)
     create_next_generation
     advance_current_generation
-    cell_coordinate_tuples.each {|tuple| @cell_hash[tuple].live! }
+    cell_coordinate_tuples.each {|tuple| Generation.new(@cell_hash).process(Position.new(*tuple)) {|cell| cell.live! } }
   end
 
   def print_to stream
@@ -139,7 +139,7 @@ class Board
   private 
 
   def create_next_generation
-    @next_generation = Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighborhood.new(hash, tuple)) }
+    @next_generation = Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighborhood.new(Generation.new(hash), tuple)) }
     return self
   end
 
@@ -160,21 +160,43 @@ class Board
   end
 end
 
-class PrintableGrid
+class Position
+  def initialize x, y
+    @x = x
+    @y = y
+  end
+
+  def use_identifier
+    yield [@x, @y]
+  end
+end
+
+class Generation
   def initialize board_hash
     @board_hash = board_hash
   end
 
+  def process position
+    position.use_identifier {|id| yield @board_hash[id] }
+    return self
+  end
+end
+
+class PrintableGrid
+  def initialize board_hash
+    @generation = Generation.new(board_hash)
+  end
+
   def print stream
-    (0..4).each {|y| PrintableRow.new(y, @board_hash).print stream }
+    (0..4).each {|y| PrintableRow.new(y, @generation).print stream }
     return self
   end
 end
 
 class PrintableRow
-  def initialize y, board_hash
+  def initialize y, generation
     @y = y
-    @board_hash = board_hash
+    @generation = generation
   end
 
   def print stream
@@ -186,7 +208,7 @@ class PrintableRow
   private
   
   def print_cell x, y, stream
-    @board_hash[[x, y]].print_to stream
+    @generation.process(Position.new(x, y)) {|cell| cell.print_to stream }
     return self
   end
 end
