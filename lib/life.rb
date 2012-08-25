@@ -1,19 +1,51 @@
 require 'set'
 
+class Dead
+  def print_to output
+    output.printf '.'
+    return self
+  end
+
+  def update_count count
+  end
+
+  def if_density_appropriate density
+    density.if_generates_life { yield }
+    return self
+  end
+end
+
+class Alive
+  def print_to output
+    output.printf 'X'
+    return self
+  end
+
+  def update_count count
+    count.increment
+    return self
+  end
+
+  def if_density_appropriate density
+    density.if_generates_life { yield }
+    return self
+  end
+end
+
 class Cell
   def initialize coordinates, board_hash
     @xy = coordinates
     @board_hash = board_hash
-    @alive = false
+    @aliveness = Dead.new
   end
 
   def print_to output
-    output.printf @alive ? 'X' : '.'
+    @aliveness.print_to output
     return self
   end
 
   def live!
-    @alive = true
+    @aliveness = Alive.new
     return self
   end
 
@@ -24,7 +56,7 @@ class Cell
   end
 
   def update_neighbor_count count
-    count.increment if @alive
+    @aliveness.update_count(count)
     return self
   end
 
@@ -35,7 +67,7 @@ class Cell
   private
 
   def if_density_appropriate density
-    density.if_generates_life { yield }
+    @aliveness.if_density_appropriate(density) { yield }
     return self
   end
 
