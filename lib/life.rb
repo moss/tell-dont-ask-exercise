@@ -127,8 +127,7 @@ class Board
   end
 
   def print_to stream
-    (0..4).each {|y| print_row y, stream }
-    return self
+    PrintableGrid.new(@cell_hash).print stream
   end
 
   def tick
@@ -159,15 +158,35 @@ class Board
     (0..4).each {|y| (0..4).each {|x| yield [x, y] } }
     return self
   end
+end
 
-  def print_row y, stream
-    (0..4).each {|x| print_cell(x, y, stream) }
+class PrintableGrid
+  def initialize board_hash
+    @board_hash = board_hash
+  end
+
+  def print stream
+    (0..4).each {|y| PrintableRow.new(y, @board_hash).print stream }
+    return self
+  end
+end
+
+class PrintableRow
+  def initialize y, board_hash
+    @y = y
+    @board_hash = board_hash
+  end
+
+  def print stream
+    (0..4).each {|x| print_cell(x, @y, stream) }
     stream.print "\n"
     return self
   end
+
+  private
   
   def print_cell x, y, stream
-    @cell_hash[[x, y]].print_to stream
+    @board_hash[[x, y]].print_to stream
     return self
   end
 end
