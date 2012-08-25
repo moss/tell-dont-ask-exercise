@@ -7,10 +7,12 @@ class Cell
 
   def print_to output
     output.printf @representation
+    return self
   end
 
   def live!
     @representation = 'X'
+    return self
   end
 end
 
@@ -33,12 +35,18 @@ class Board
 
   private 
 
+  def each_interesting_position
+    (0..4).each {|y| (0..4).each {|x| yield [x, y] } }
+  end
+
   def print_row y, stream
-      (0..4).each {|x| print_cell(x, y, stream) }
-      stream.print "\n"
+    (0..4).each {|x| print_cell(x, y, stream) }
+    stream.print "\n"
+    return self
   end
   
   def print_cell x, y, stream
     @cell_hash[[x, y]].print_to stream
+    return self
   end
 end
