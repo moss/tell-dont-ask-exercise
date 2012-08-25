@@ -9,24 +9,40 @@ Wrong.config.alias_assert :expect, :override => true
 describe PopulationDensity do
   subject { PopulationDensity.new }
 
+  def expect_generates_life expected_liveliness
+    lively = false
+    subject.if_generates_life { lively = true }
+    expect { lively == expected_liveliness }
+  end
+
+  def expect_supports_life expected_liveliness
+    lively = false
+    subject.if_supports_life { lively = true }
+    expect { lively == expected_liveliness }
+  end
+
+  context "with one neighbor" do
+    before { subject.increment }
+    it("does not generate life") { expect_generates_life false }
+    it("does not support life") { expect_supports_life false }
+  end
+
   context "with two neighbors" do
     before { subject.increment.increment }
-
-    it "is not lively" do
-      lively = false
-      subject.if_lively { lively = true }
-      expect { !lively }
-    end
+    it("does not generate life") { expect_generates_life false }
+    it("supports life") { expect_supports_life true }
   end
 
   context "with three neighbors" do
     before { subject.increment.increment.increment }
+    it("generates life") { expect_generates_life true }
+    it("supports life") { expect_supports_life true }
+  end
 
-    it "is lively" do
-      lively = false
-      subject.if_lively { lively = true }
-      expect { lively }
-    end
+  context "with four neighbors" do
+    before { subject.increment.increment.increment.increment }
+    it("does not generate life") { expect_generates_life false }
+    it("does not support life") { expect_supports_life false }
   end
 end
 

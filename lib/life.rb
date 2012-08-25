@@ -20,8 +20,7 @@ class Cell
   def if_lives
     density = PopulationDensity.new
     count_neighbors density
-    density.if_lively { yield }
-    return self
+    if_density_appropriate(density) { yield }
   end
 
   def update_neighbor_count count
@@ -34,6 +33,11 @@ class Cell
   end
 
   private
+
+  def if_density_appropriate density
+    density.if_generates_life { yield }
+    return self
+  end
 
   def each_neighbor
     [
@@ -60,8 +64,14 @@ class PopulationDensity
     return self
   end
   
-  def if_lively
+  def if_generates_life
     yield if @count == 3
+    return self
+  end
+
+  def if_supports_life
+    yield if @count > 1 && @count < 4
+    return self
   end
 end
 
