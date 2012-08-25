@@ -120,14 +120,14 @@ class PopulationDensity
 end
 
 class Board
-  def initialize(*cell_coordinate_tuples)
+  def initialize(*cell_positions)
     create_next_generation
     advance_current_generation
-    cell_coordinate_tuples.each {|tuple| Generation.new(@cell_hash).process(Position.new(*tuple)) {|cell| cell.live! } }
+    cell_positions.each {|position| @current_generation.process(position) {|cell| cell.live! } }
   end
 
   def print_to stream
-    PrintableGrid.new(@cell_hash).print stream
+    PrintableGrid.new(@current_generation).print stream
   end
 
   def tick
@@ -139,18 +139,20 @@ class Board
   private 
 
   def create_next_generation
-    @next_generation = Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighborhood.new(Generation.new(hash), tuple)) }
+    @next_hash = Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighborhood.new(Generation.new(hash), tuple)) }
+    @next_generation = Generation.new(@next_hash)
     return self
   end
 
   def calculate_next_generation
     each_interesting_position do |tuple|
-      @cell_hash[tuple].update_future_self(@next_generation[tuple])
+      @cell_hash[tuple].update_future_self(@next_hash[tuple])
     end
   end
 
   def advance_current_generation
-    @cell_hash = @next_generation
+    @cell_hash = @next_hash
+    @current_generation = @next_generation
     return self
   end
 
@@ -183,8 +185,8 @@ class Generation
 end
 
 class PrintableGrid
-  def initialize board_hash
-    @generation = Generation.new(board_hash)
+  def initialize generation
+    @generation = generation
   end
 
   def print stream

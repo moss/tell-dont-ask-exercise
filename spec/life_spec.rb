@@ -97,7 +97,7 @@ describe Board do
 
   context "with cells on it" do
     subject do
-      Board.new([4, 4], [2, 1])
+      Board.new(Position.new(4, 4), Position.new(2, 1))
     end
     
     it "prints a grid of cells to a stream" do
@@ -112,7 +112,7 @@ HERE
   end
 
   context "with one cell" do
-    subject { Board.new([1, 1]) }
+    subject { Board.new(Position.new(1, 1)) }
     
     it "will be empty in the next generation" do
       subject.tick
@@ -121,7 +121,7 @@ HERE
   end
 
   context "with a two by two square on it" do
-    subject { Board.new([1, 1], [2, 1], [1, 2], [2, 2]) }
+    subject { Board.new(Position.new(1, 1), Position.new(2, 1), Position.new(1, 2), Position.new(2, 2)) }
 
     it "does not change in the next generation" do
       subject.tick
@@ -136,7 +136,7 @@ HERE
   end
 
   context "with a blinker" do
-    subject { Board.new([1, 2], [2, 2], [3, 2]) }
+    subject { Board.new(Position.new(1, 2), Position.new(2, 2), Position.new(3, 2)) }
 
     it "starts out looking like this" do
       check_output <<HERE
