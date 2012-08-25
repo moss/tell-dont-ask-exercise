@@ -34,8 +34,8 @@ class Alive
 end
 
 class Cell
-  def initialize coordinates, board_hash
-    @neighborhood = Neighborhood.new(board_hash, coordinates[0], coordinates[1])
+  def initialize neighborhood
+    @neighborhood = neighborhood
     @aliveness = Dead.new
   end
 
@@ -74,10 +74,9 @@ class Cell
 end
 
 class Neighborhood
-  def initialize board_hash, x, y
+  def initialize board_hash, coordinates
     @board_hash = board_hash
-    @x = x
-    @y = y
+    @x, @y = coordinates
   end
 
   def neighbors &block
@@ -141,7 +140,7 @@ class Board
   private 
 
   def create_next_generation
-    @next_generation = Hash.new {|hash, tuple| hash[tuple] = Cell.new(tuple, hash) }
+    @next_generation = Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighborhood.new(hash, tuple)) }
     return self
   end
 
