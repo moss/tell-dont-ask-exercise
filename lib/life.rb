@@ -114,7 +114,7 @@ class World
   end
 
   def print_to stream
-    PrintableGrid.new(@current_generation).print stream
+    PrintableGrid.new.print stream, @current_generation
   end
 
   def tick
@@ -187,32 +187,34 @@ class Board
 end
 
 class PrintableGrid
-  def initialize board
-    @board = board
+  def initialize
+    @rows = (0..4).collect {|y| PrintableRow.new(y) }
   end
 
-  def print stream
-    (0..4).each {|y| PrintableRow.new(y, @board).print stream }
+  def print stream, board = nil
+    @rows.each {|row| row.print stream, board }
     return self
   end
 end
 
 class PrintableRow
-  def initialize y, board
-    @y = y
-    @board = board
+  def initialize y
+    @printable_cells = (0..4).collect {|x| PrintableCell.new(x, y) }
   end
 
-  def print stream
-    (0..4).each {|x| print_cell(x, @y, stream) }
+  def print stream, board
+    @printable_cells.each {|cell| cell.print(stream, board) }
     stream.print "\n"
     return self
   end
+end
 
-  private
-  
-  def print_cell x, y, stream
-    @board.process(Position.new(x, y)) {|cell| cell.print_to stream }
-    return self
+class PrintableCell
+  def initialize x, y
+    @position = Position.new(x, y)
+  end
+
+  def print stream, board
+    board.process(@position) {|cell| cell.print_to stream }
   end
 end
