@@ -80,7 +80,7 @@ describe Cell do
   end
 end
 
-describe Board do
+describe World do
   def check_output expected_output
     output = StringIO.new
     subject.print_to output
@@ -88,7 +88,7 @@ describe Board do
   end
 
   context "with no cells on it" do
-    subject { Board.new() }
+    subject { World.new() }
 
     it "prints a grid of empty cells to a stream" do
       check_output ".....\n" * 5
@@ -97,7 +97,7 @@ describe Board do
 
   context "with cells on it" do
     subject do
-      Board.new(Position.new(4, 4), Position.new(2, 1))
+      World.new(Position.new(4, 4), Position.new(2, 1))
     end
     
     it "prints a grid of cells to a stream" do
@@ -112,7 +112,7 @@ HERE
   end
 
   context "with one cell" do
-    subject { Board.new(Position.new(1, 1)) }
+    subject { World.new(Position.new(1, 1)) }
     
     it "will be empty in the next generation" do
       subject.tick
@@ -121,7 +121,7 @@ HERE
   end
 
   context "with a two by two square on it" do
-    subject { Board.new(Position.new(1, 1), Position.new(2, 1), Position.new(1, 2), Position.new(2, 2)) }
+    subject { World.new(Position.new(1, 1), Position.new(2, 1), Position.new(1, 2), Position.new(2, 2)) }
 
     it "does not change in the next generation" do
       subject.tick
@@ -136,7 +136,7 @@ HERE
   end
 
   context "with a blinker" do
-    subject { Board.new(Position.new(1, 2), Position.new(2, 2), Position.new(3, 2)) }
+    subject { World.new(Position.new(1, 2), Position.new(2, 2), Position.new(3, 2)) }
 
     it "starts out looking like this" do
       check_output <<HERE

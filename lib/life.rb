@@ -74,13 +74,13 @@ class Cell
 end
 
 class Neighborhood
-  def initialize generation, coordinates
-    @generation = generation
+  def initialize board, coordinates
+    @board = board
     @position = Position.new(*coordinates)
   end
 
   def neighbors &block
-    @position.each_neighbor {|position| @generation.process(position, &block) }
+    @position.each_neighbor {|position| @board.process(position, &block) }
     return self
   end
 end
@@ -106,7 +106,7 @@ class PopulationDensity
   end
 end
 
-class Board
+class World
   def initialize(*cell_positions)
     create_next_generation
     advance_current_generation
@@ -126,7 +126,7 @@ class Board
   private 
 
   def create_next_generation
-    @next_generation = Generation.new
+    @next_generation = Board.new
     return self
   end
 
@@ -175,32 +175,32 @@ class Position
   end
 end
 
-class Generation
+class Board
   def initialize h = nil
-    @board_hash = h || Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighborhood.new(self, tuple)) }
+    @cells = h || Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighborhood.new(self, tuple)) }
   end
 
   def process position
-    position.use_identifier {|id| yield @board_hash[id] }
+    position.use_identifier {|id| yield @cells[id] }
     return self
   end
 end
 
 class PrintableGrid
-  def initialize generation
-    @generation = generation
+  def initialize board
+    @board = board
   end
 
   def print stream
-    (0..4).each {|y| PrintableRow.new(y, @generation).print stream }
+    (0..4).each {|y| PrintableRow.new(y, @board).print stream }
     return self
   end
 end
 
 class PrintableRow
-  def initialize y, generation
+  def initialize y, board
     @y = y
-    @generation = generation
+    @board = board
   end
 
   def print stream
@@ -212,7 +212,7 @@ class PrintableRow
   private
   
   def print_cell x, y, stream
-    @generation.process(Position.new(x, y)) {|cell| cell.print_to stream }
+    @board.process(Position.new(x, y)) {|cell| cell.print_to stream }
     return self
   end
 end
