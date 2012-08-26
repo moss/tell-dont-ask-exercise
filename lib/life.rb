@@ -76,24 +76,11 @@ end
 class Neighborhood
   def initialize generation, coordinates
     @generation = generation
-    @x, @y = coordinates
+    @position = Position.new(*coordinates)
   end
 
   def neighbors &block
-    offsets do |xoffset|
-      offsets {|yoffset| process_neighbor xoffset, yoffset, &block }
-    end
-  end
-
-  private
-
-  def process_neighbor xoffset, yoffset, &block
-    @generation.process(Position.new(@x + xoffset, @y + yoffset), &block) unless xoffset == 0 && yoffset == 0
-    return self
-  end
-
-  def offsets &block
-    [-1, 0, 1].each(&block)
+    @position.each_neighbor {|position| @generation.process(position, &block) }
     return self
   end
 end
@@ -172,6 +159,19 @@ class Position
 
   def use_identifier
     yield [@x, @y]
+  end
+
+  def each_neighbor &block
+    offsets do |xoffset|
+      offsets {|yoffset| yield Position.new(@x + xoffset, @y + yoffset) unless xoffset == 0 && yoffset == 0 }
+    end
+  end
+
+  private
+
+  def offsets &block
+    [-1, 0, 1].each(&block)
+    return self
   end
 end
 
