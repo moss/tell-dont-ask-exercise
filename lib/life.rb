@@ -139,25 +139,27 @@ class Board
   private 
 
   def create_next_generation
-    @next_hash = Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighborhood.new(Generation.new(hash), tuple)) }
-    @next_generation = Generation.new(@next_hash)
+    @next_generation = Generation.new
     return self
   end
 
   def calculate_next_generation
-    each_interesting_position do |tuple|
-      @cell_hash[tuple].update_future_self(@next_hash[tuple])
+    each_interesting_position do |position|
+      @current_generation.process(position) {|current_cell|
+        @next_generation.process(position) {|future_cell|
+          current_cell.update_future_self(future_cell)
+        }
+      }
     end
   end
 
   def advance_current_generation
-    @cell_hash = @next_hash
     @current_generation = @next_generation
     return self
   end
 
   def each_interesting_position
-    (0..4).each {|y| (0..4).each {|x| yield [x, y] } }
+    (0..4).each {|y| (0..4).each {|x| yield Position.new(x, y) } }
     return self
   end
 end
@@ -174,8 +176,8 @@ class Position
 end
 
 class Generation
-  def initialize board_hash
-    @board_hash = board_hash
+  def initialize h = nil
+    @board_hash = h || Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighborhood.new(self, tuple)) }
   end
 
   def process position
