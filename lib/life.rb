@@ -3,6 +3,7 @@ require 'set'
 class TellDontAsk
   @@handled_methods_by_class = Hash.new {|h, k| h[k] = [] }
 
+  # TODO shorten long method
   def self.method_added name
     handled_methods = @@handled_methods_by_class[self]
     return if handled_methods.include? name
@@ -15,6 +16,7 @@ class TellDontAsk
   end
 end
 
+# TODO does this belong in a separate module?
 class TextBoardRenderer < TellDontAsk
   def initialize output
     @output = output
@@ -90,11 +92,13 @@ class Cell < TellDontAsk
 
   private
 
+  # TODO does this block belong out here?
   def update_cell_based_on_density density, cell
     @aliveness.if_density_appropriate(density) { cell.live! }
   end
 end
 
+# TODO is there a way to initialize this with neighbors, avoid dependency on board?
 class Neighborhood < TellDontAsk
   def initialize board, coordinates
     @board = board
@@ -106,6 +110,7 @@ class Neighborhood < TellDontAsk
   end
 end
 
+# TODO bad name
 class PopulationDensity < TellDontAsk
   def initialize
     @count = 0
@@ -115,6 +120,7 @@ class PopulationDensity < TellDontAsk
     @count += 1
   end
   
+  # TODO these yields are funny
   def if_generates_life
     yield if @count == 3
   end
@@ -124,6 +130,7 @@ class PopulationDensity < TellDontAsk
   end
 end
 
+# TODO naming?
 class World < TellDontAsk
   def initialize(*cell_positions)
     create_next_generation
@@ -143,6 +150,7 @@ class World < TellDontAsk
 
   private 
 
+  # TODO get these private methods somewhere else
   def create_next_generation
     @next_generation = Board.new
   end
@@ -176,6 +184,7 @@ class Position < TellDontAsk
     yield [@x, @y]
   end
 
+  # TODO this is bulky and awkward. Alternatives?
   def each_neighbor
     offsets do |xoff|
       offsets {|yoff| yield Position.new(@x + xoff, @y + yoff) unless xoff == 0 && yoff == 0 }
@@ -194,11 +203,13 @@ class Board < TellDontAsk
     @cells = h || Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighborhood.new(self, tuple)) }
   end
 
+  # TODO naming?
   def process position
     position.use_identifier {|id| yield @cells[id] }
   end
 end
 
+# TODO naming is now wrong
 class PrintableGrid < TellDontAsk
   def initialize
     @rows = (0..4).collect {|y| PrintableRow.new(y) }
@@ -209,6 +220,7 @@ class PrintableGrid < TellDontAsk
   end
 end
 
+# TODO naming is now wrong
 class PrintableRow < TellDontAsk
   def initialize y
     @printable_cells = (0..4).collect {|x| PrintableCell.new(x, y) }
@@ -220,6 +232,8 @@ class PrintableRow < TellDontAsk
   end
 end
 
+# TODO naming is now wrong
+# TODO need to be separate from Cell? Maybe -- I'm not sure.
 class PrintableCell < TellDontAsk
   def initialize x, y
     @position = Position.new(x, y)
