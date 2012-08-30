@@ -1,17 +1,33 @@
 require 'set'
 
 class TellDontAsk
-  @@handled_methods_by_class = Hash.new {|h, k| h[k] = [] }
+  @@rewritten_methods_by_class = Hash.new {|h, k| h[k] = [] }
 
-  # TODO shorten long method
+  private
+
+  def returning_self
+    yield
+    return self
+  end
+
   def self.method_added name
-    handled_methods = @@handled_methods_by_class[self]
-    return if handled_methods.include? name
-    handled_methods << name
+    return if rewritten_methods.include? name
+    rewrite_method_to_return_self name
+  end
+
+  def self.rewritten_methods
+    @@rewritten_methods_by_class[self]
+  end
+
+  def self.rewrite_method_to_return_self name
+    rewritten_methods << name
     original_definition = instance_method(name)
+    define_new_version_of_method original_definition, name
+  end
+
+  def self.define_new_version_of_method original_definition, name
     define_method(name) do |*args, &block|
-      original_definition.bind(self).call(*args, &block)
-      return self
+      returning_self { original_definition.bind(self).call(*args, &block) }
     end
   end
 end
