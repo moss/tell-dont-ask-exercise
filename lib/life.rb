@@ -1,8 +1,22 @@
 require 'set'
 
+class TextBoardRenderer
+  def initialize output
+    @output = output
+  end
+
+  def live_cell
+    @output.printf 'X'
+  end
+
+  def dead_cell
+    @output.printf '.'
+  end
+end
+
 class Dead
   def print_to output
-    output.printf '.'
+    TextBoardRenderer.new(output).dead_cell
     return self
   end
 
@@ -18,7 +32,7 @@ end
 
 class Alive
   def print_to output
-    output.printf 'X'
+    TextBoardRenderer.new(output).live_cell
     return self
   end
 

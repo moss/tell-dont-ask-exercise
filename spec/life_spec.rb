@@ -6,6 +6,21 @@ require 'rspec'
 require "wrong/adapters/rspec"
 Wrong.config.alias_assert :expect, :override => true
 
+describe TextBoardRenderer do
+  let(:output) { StringIO.new }
+  subject { TextBoardRenderer.new(output) }
+
+  it "renders live cells as X" do
+    subject.live_cell
+    expect { output.string == 'X' }
+  end
+
+  it "renders dead cells as ." do
+    subject.dead_cell
+    expect { output.string == '.' }
+  end
+end
+
 describe PopulationDensity do
   subject { PopulationDensity.new }
 
