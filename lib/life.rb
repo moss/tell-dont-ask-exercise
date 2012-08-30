@@ -19,8 +19,8 @@ class TextBoardRenderer
 end
 
 class Dead
-  def print_to output
-    TextBoardRenderer.new(output).dead_cell
+  def print_to renderer
+    renderer.dead_cell
     return self
   end
 
@@ -35,8 +35,8 @@ class Dead
 end
 
 class Alive
-  def print_to output
-    TextBoardRenderer.new(output).live_cell
+  def print_to renderer
+    renderer.live_cell
     return self
   end
 
@@ -57,8 +57,8 @@ class Cell
     @aliveness = Dead.new
   end
 
-  def print_to output
-    @aliveness.print_to output
+  def print_to renderer
+    @aliveness.print_to renderer
     return self
   end
 
@@ -132,7 +132,7 @@ class World
   end
 
   def print_to stream
-    PrintableGrid.new.print stream, @current_generation
+    PrintableGrid.new.print TextBoardRenderer.new(stream), @current_generation
   end
 
   def tick
@@ -222,7 +222,7 @@ class PrintableRow
 
   def print stream, board
     @printable_cells.each {|cell| cell.print(stream, board) }
-    TextBoardRenderer.new(stream).end_row
+    stream.end_row
     return self
   end
 end

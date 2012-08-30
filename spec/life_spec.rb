@@ -68,12 +68,12 @@ end
 
 describe Cell do
   subject { Cell.new(nil) }
+  let(:renderer) { double('renderer') }
 
   context "not alive" do
-    it "should render as ." do
-      output = StringIO.new
-      subject.print_to output
-      expect { output.string == '.' }
+    it "reports dead cell to renderer" do
+      renderer.should_receive(:dead_cell)
+      subject.print_to renderer
     end
 
     it "should not increment the neighbor count" do
@@ -87,9 +87,8 @@ describe Cell do
     before { subject.live! }
 
     it "should render as X" do
-      output = StringIO.new
-      subject.print_to output
-      expect { output.string == 'X' }
+      renderer.should_receive(:live_cell)
+      subject.print_to renderer
     end
 
     it "should increment the neighbor count" do
