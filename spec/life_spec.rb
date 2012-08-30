@@ -73,7 +73,7 @@ describe Cell do
   context "not alive" do
     it "reports dead cell to renderer" do
       renderer.should_receive(:dead_cell)
-      subject.print_to renderer
+      subject.render_on renderer
     end
 
     it "should not increment the neighbor count" do
@@ -88,7 +88,7 @@ describe Cell do
 
     it "should render as X" do
       renderer.should_receive(:live_cell)
-      subject.print_to renderer
+      subject.render_on renderer
     end
 
     it "should increment the neighbor count" do

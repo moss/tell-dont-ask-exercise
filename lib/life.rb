@@ -19,7 +19,7 @@ class TextBoardRenderer
 end
 
 class Dead
-  def print_to renderer
+  def render_on renderer
     renderer.dead_cell
     return self
   end
@@ -35,7 +35,7 @@ class Dead
 end
 
 class Alive
-  def print_to renderer
+  def render_on renderer
     renderer.live_cell
     return self
   end
@@ -57,8 +57,8 @@ class Cell
     @aliveness = Dead.new
   end
 
-  def print_to renderer
-    @aliveness.print_to renderer
+  def render_on renderer
+    @aliveness.render_on renderer
     return self
   end
 
@@ -131,8 +131,8 @@ class World
     cell_positions.each {|position| @current_generation.process(position) {|cell| cell.live! } }
   end
 
-  def print_to stream
-    PrintableGrid.new.print TextBoardRenderer.new(stream), @current_generation
+  def print_to output
+    PrintableGrid.new.render_on TextBoardRenderer.new(output), @current_generation
   end
 
   def tick
@@ -179,9 +179,9 @@ class Position
     yield [@x, @y]
   end
 
-  def each_neighbor &block
-    offsets do |xoffset|
-      offsets {|yoffset| yield Position.new(@x + xoffset, @y + yoffset) unless xoffset == 0 && yoffset == 0 }
+  def each_neighbor
+    offsets do |xoff|
+      offsets {|yoff| yield Position.new(@x + xoff, @y + yoff) unless xoff == 0 && yoff == 0 }
     end
   end
 
@@ -209,8 +209,8 @@ class PrintableGrid
     @rows = (0..4).collect {|y| PrintableRow.new(y) }
   end
 
-  def print stream, board = nil
-    @rows.each {|row| row.print stream, board }
+  def render_on renderer, board = nil
+    @rows.each {|row| row.render_on renderer, board }
     return self
   end
 end
@@ -220,9 +220,9 @@ class PrintableRow
     @printable_cells = (0..4).collect {|x| PrintableCell.new(x, y) }
   end
 
-  def print stream, board
-    @printable_cells.each {|cell| cell.print(stream, board) }
-    stream.end_row
+  def render_on renderer, board
+    @printable_cells.each {|cell| cell.render_on(renderer, board) }
+    renderer.end_row
     return self
   end
 end
@@ -232,7 +232,7 @@ class PrintableCell
     @position = Position.new(x, y)
   end
 
-  def print stream, board
-    board.process(@position) {|cell| cell.print_to stream }
+  def render_on renderer, board
+    board.process(@position) {|cell| cell.render_on renderer }
   end
 end
