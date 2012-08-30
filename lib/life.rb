@@ -12,6 +12,10 @@ class TextBoardRenderer
   def dead_cell
     @output.printf '.'
   end
+
+  def end_row
+    @output.printf "\n"
+  end
 end
 
 class Dead
@@ -218,7 +222,7 @@ class PrintableRow
 
   def print stream, board
     @printable_cells.each {|cell| cell.print(stream, board) }
-    stream.print "\n"
+    TextBoardRenderer.new(stream).end_row
     return self
   end
 end

@@ -19,6 +19,11 @@ describe TextBoardRenderer do
     subject.dead_cell
     expect { output.string == '.' }
   end
+
+  it "renders each row on a new line of text" do
+    subject.end_row
+    expect { output.string == "\n" }
+  end
 end
 
 describe PopulationDensity do
