@@ -6,6 +6,52 @@ require 'rspec'
 require "wrong/adapters/rspec"
 Wrong.config.alias_assert :expect, :override => true
 
+describe TellDontAsk do
+  subject { SampleTellDontAsk.new }
+
+  it "returns self from any method defined on it" do
+    expect { subject.some_method == subject }
+  end
+
+  it "doesn't override methods inherited from Object" do
+    expect { subject.to_s.instance_of? String }
+    expect { !subject.to_s.instance_of? TellDontAsk }
+  end
+
+  it "even updates return values of methods that try to return something" do
+    expect { subject.method_returning_int == subject }
+  end
+
+  it "still runs the body of the method" do
+    collaborator = double('collaborator')
+    collaborator.should_receive(:some_method_call)
+    subject.call_some_method_on collaborator
+  end
+
+  it "still calls the block if the original method did" do
+    value = 'did not update'
+    subject.pass_result_to_block {|result| value = result }
+    expect { value == 'updated' }
+  end
+
+  class SampleTellDontAsk < TellDontAsk
+    def some_method
+    end
+
+    def method_returning_int
+      return 42
+    end
+
+    def call_some_method_on collaborator
+      collaborator.some_method_call
+    end
+
+    def pass_result_to_block
+      yield 'updated'
+    end
+  end
+end
+
 describe TextBoardRenderer do
   let(:output) { StringIO.new }
   subject { TextBoardRenderer.new(output) }
