@@ -177,6 +177,7 @@ class Position
 
   def use_identifier
     yield [@x, @y]
+    return self
   end
 
   def each_neighbor
