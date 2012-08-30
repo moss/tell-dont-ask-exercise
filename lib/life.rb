@@ -1,11 +1,12 @@
 require 'set'
 
 class TellDontAsk
-  @@handled_methods = []
+  @@handled_methods_by_class = Hash.new {|h, k| h[k] = [] }
 
   def self.method_added name
-    return if @@handled_methods.include? name
-    @@handled_methods << name
+    handled_methods = @@handled_methods_by_class[self]
+    return if handled_methods.include? name
+    handled_methods << name
     original_definition = instance_method(name)
     define_method(name) do |*args, &block|
       original_definition.bind(self).call(*args, &block)
