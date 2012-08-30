@@ -234,5 +234,6 @@ class PrintableCell
 
   def render_on renderer, board
     board.process(@position) {|cell| cell.render_on renderer }
+    return self
   end
 end
