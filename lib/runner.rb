@@ -29,12 +29,8 @@ class World < TellDontAsk
   end
 
   def calculate_next_generation
-    each_interesting_position do |position|
-      @current_generation.process(position) {|current_cell|
-        @next_generation.process(position) {|future_cell|
-          current_cell.update_future_self(future_cell)
-        }
-      }
+    each_interesting_position do |current, future|
+      current.update_future_self(future)
     end
   end
 
@@ -42,7 +38,15 @@ class World < TellDontAsk
     @current_generation = @next_generation
   end
 
-  def each_interesting_position
-    (0..4).each {|y| (0..4).each {|x| yield Position.new(x, y) } }
+  def each_interesting_position &block
+    (0..4).each {|y|
+      (0..4).each {|x| process_current_and_future Position.new(x, y), &block }
+    }
+  end
+
+  def process_current_and_future position
+    @current_generation.process(position) {|current|
+      @next_generation.process(position) {|future| yield current, future }
+    }
   end
 end
