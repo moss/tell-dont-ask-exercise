@@ -1,9 +1,8 @@
 require 'tell_dont_ask'
 
-# TODO naming is now wrong
-class PrintableGrid < TellDontAsk
+class Viewport < TellDontAsk
   def initialize
-    @rows = (0..4).collect {|y| PrintableRow.new(y) }
+    @rows = (0..4).collect {|y| ViewportRow.new(y) }
   end
 
   def render_on renderer, board = nil
@@ -11,10 +10,9 @@ class PrintableGrid < TellDontAsk
   end
 end
 
-# TODO naming is now wrong
-class PrintableRow < TellDontAsk
+class ViewportRow < TellDontAsk
   def initialize y
-    @printable_cells = (0..4).collect {|x| PrintableCell.new(x, y) }
+    @printable_cells = (0..4).collect {|x| ViewportCell.new(x, y) }
   end
 
   def render_on renderer, board
@@ -23,9 +21,8 @@ class PrintableRow < TellDontAsk
   end
 end
 
-# TODO naming is now wrong
 # TODO need to be separate from Cell? Maybe -- I'm not sure.
-class PrintableCell < TellDontAsk
+class ViewportCell < TellDontAsk
   def initialize x, y
     @position = Position.new(x, y)
   end

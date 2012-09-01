@@ -3,8 +3,7 @@ require 'life'
 require 'viewport'
 require 'text_board_renderer'
 
-# TODO naming?
-class World < TellDontAsk
+class Runner < TellDontAsk
   def initialize(*cell_positions)
     create_next_generation
     advance_current_generation
@@ -12,7 +11,7 @@ class World < TellDontAsk
   end
 
   def print_to output
-    PrintableGrid.new.render_on TextBoardRenderer.new(output), @current_generation
+    Viewport.new.render_on TextBoardRenderer.new(output), @current_generation
   end
 
   def tick
