@@ -5,8 +5,7 @@ require 'text_board_renderer'
 
 class Runner < TellDontAsk
   def initialize(*cell_positions)
-    create_next_generation
-    advance_current_generation
+    new_board Board.new
     cell_positions.each {|position| @current_generation.process(position) {|cell| cell.live! } }
   end
 
@@ -15,27 +14,27 @@ class Runner < TellDontAsk
   end
 
   def tick
-    create_next_generation
-    calculate_next_generation
-    advance_current_generation
+    StateTransition.new(@current_generation, self).calculate_next_generation
   end
 
-  private 
+  def new_board board
+    @current_generation = board
+  end
+end
 
-  # TODO get these private methods somewhere else
-  def create_next_generation
+class StateTransition
+  def initialize current_generation, listener
+    @current_generation = current_generation
     @next_generation = Board.new
+    @listener = listener
   end
 
   def calculate_next_generation
-    each_interesting_position do |current, future|
-      current.update_future_self(future)
-    end
+    each_interesting_position {|current, future| current.update_future_self(future) }
+    @listener.new_board @next_generation
   end
 
-  def advance_current_generation
-    @current_generation = @next_generation
-  end
+  private
 
   def each_interesting_position &block
     (0..4).each {|y|
