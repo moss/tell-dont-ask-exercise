@@ -6,7 +6,7 @@ require 'text_board_renderer'
 class Runner < TellDontAsk
   def initialize(*cell_positions)
     new_board Board.new
-    cell_positions.each {|position| @current_generation.process(position) {|cell| cell.live! } }
+    Positions.new(*cell_positions).on_board(@current_generation) {|cell| cell.live! }
   end
 
   def print_to output
@@ -53,5 +53,15 @@ class GenerationPair
     @current_generation.process(position) {|current|
       @next_generation.process(position) {|future| yield current, future }
     }
+  end
+end
+
+class Positions
+  def initialize *positions
+    @positions = positions
+  end
+
+  def on_board board, &block
+    @positions.each {|position| board.process(position, &block) }
   end
 end
