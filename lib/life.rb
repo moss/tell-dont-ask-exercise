@@ -44,23 +44,12 @@ class Cell < TellDontAsk
 
   def update_future_self cell
     density = PopulationDensity.new
-    count_neighbors density
-    update_cell_based_on_density(density, cell)
+    @neighborhood.neighbors {|neighbor| neighbor.update_neighbor_count density }
+    @aliveness.if_density_appropriate(density) { cell.live! }
   end
 
   def update_neighbor_count count
     @aliveness.update_count(count)
-  end
-
-  def count_neighbors density
-    @neighborhood.neighbors {|neighbor| neighbor.update_neighbor_count density }
-  end
-
-  private
-
-  # TODO does this block belong out here?
-  def update_cell_based_on_density density, cell
-    @aliveness.if_density_appropriate(density) { cell.live! }
   end
 end
 

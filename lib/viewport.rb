@@ -21,7 +21,6 @@ class ViewportRow < TellDontAsk
   end
 end
 
-# TODO need to be separate from Cell? Maybe -- I'm not sure.
 class ViewportCell < TellDontAsk
   def initialize x, y
     @position = Position.new(x, y)
