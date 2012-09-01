@@ -24,9 +24,8 @@ end
 
 class StateTransition
   def initialize current_generation, listener
-    @current_generation = current_generation
     @next_generation = Board.new
-    @generation_pair = GenerationPair.new(@current_generation, @next_generation)
+    @generation_pair = GenerationPair.new(current_generation, @next_generation)
     @listener = listener
   end
 
