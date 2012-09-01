@@ -54,26 +54,3 @@ class GenerationPair
     }
   end
 end
-
-class Grid
-  def initialize rows, columns
-    @rows = rows
-    @columns = columns
-  end
-
-  def each
-    @rows.each {|y|
-      @columns.each {|x| yield Position.new(x, y) }
-    }
-  end
-end
-
-class Positions
-  def initialize positions
-    @positions = positions
-  end
-
-  def on_board board, &block
-    @positions.each {|position| board.process(position, &block) }
-  end
-end

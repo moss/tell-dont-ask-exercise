@@ -1,5 +1,6 @@
 require 'set'
 require 'tell_dont_ask'
+require 'space'
 
 class Dead < TellDontAsk
   def render_on renderer
@@ -53,18 +54,6 @@ class Cell < TellDontAsk
   end
 end
 
-# TODO is there a way to initialize this with neighbors, avoid dependency on board?
-class Neighborhood < TellDontAsk
-  def initialize board, coordinates
-    @board = board
-    @position = Position.new(*coordinates)
-  end
-
-  def neighbors &block
-    @position.each_neighbor {|position| @board.process(position, &block) }
-  end
-end
-
 # TODO bad name
 class PopulationDensity < TellDontAsk
   def initialize
@@ -82,30 +71,6 @@ class PopulationDensity < TellDontAsk
 
   def if_supports_life
     yield if @count > 1 && @count < 4
-  end
-end
-
-class Position < TellDontAsk
-  def initialize x, y
-    @x = x
-    @y = y
-  end
-
-  def use_identifier
-    yield [@x, @y]
-  end
-
-  # TODO this is bulky and awkward. Alternatives?
-  def each_neighbor
-    offsets do |xoff|
-      offsets {|yoff| yield Position.new(@x + xoff, @y + yoff) unless xoff == 0 && yoff == 0 }
-    end
-  end
-
-  private
-
-  def offsets &block
-    [-1, 0, 1].each(&block)
   end
 end
 
