@@ -6,7 +6,7 @@ require 'text_board_renderer'
 class Runner < TellDontAsk
   def initialize(*cell_positions)
     new_board Board.new
-    Positions.new(*cell_positions).on_board(@current_generation) {|cell| cell.live! }
+    Positions.new(cell_positions).on_board(@current_generation) {|cell| cell.live! }
   end
 
   def print_to output
@@ -37,9 +37,8 @@ class StateTransition
   private
 
   def each_interesting_position &block
-    (0..4).each {|y|
-      (0..4).each {|x| @generation_pair.process Position.new(x, y), &block }
-    }
+    grid = Grid.new(0..4, 0..4)
+    Positions.new(grid).on_board(@generation_pair, &block)
   end
 end
 
@@ -56,8 +55,21 @@ class GenerationPair
   end
 end
 
+class Grid
+  def initialize rows, columns
+    @rows = rows
+    @columns = columns
+  end
+
+  def each
+    @rows.each {|y|
+      @columns.each {|x| yield Position.new(x, y) }
+    }
+  end
+end
+
 class Positions
-  def initialize *positions
+  def initialize positions
     @positions = positions
   end
 
