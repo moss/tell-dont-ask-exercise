@@ -47,13 +47,23 @@ class Positions < TellDontAsk
   end
 end
 
-class Neighborhood < TellDontAsk
+class Neighbors < TellDontAsk
   def initialize board, coordinates
     @board = board
-    @position = Position.new(*coordinates)
+    @positions = Positions.new(Neighborhood.new(coordinates))
   end
 
   def neighbors &block
-    @position.each_neighbor {|position| @board.process(position, &block) }
+    @positions.on_board(@board, &block)
+  end
+end
+
+class Neighborhood
+  def initialize coordinates
+    @position = Position.new(*coordinates)
+  end
+
+  def each &block
+    @position.each_neighbor &block
   end
 end

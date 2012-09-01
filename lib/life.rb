@@ -76,7 +76,7 @@ end
 
 class Board < TellDontAsk
   def initialize h = nil
-    @cells = h || Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighborhood.new(self, tuple)) }
+    @cells = h || Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighbors.new(self, tuple)) }
   end
 
   # TODO naming?
