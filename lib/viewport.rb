@@ -1,4 +1,4 @@
-require 'telldontask'
+require 'tell_dont_ask'
 
 # TODO naming is now wrong
 class PrintableGrid < TellDontAsk

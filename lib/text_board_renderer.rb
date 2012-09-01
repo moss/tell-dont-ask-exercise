@@ -1,4 +1,4 @@
-require 'telldontask'
+require 'tell_dont_ask'
 
 class TextBoardRenderer < TellDontAsk
   def initialize output

@@ -1,4 +1,4 @@
-require 'telldontask'
+require 'tell_dont_ask'
 require 'life'
 require 'viewport'
 require 'text_board_renderer'

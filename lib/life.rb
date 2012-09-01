@@ -1,5 +1,5 @@
 require 'set'
-require 'telldontask'
+require 'tell_dont_ask'
 
 class Dead < TellDontAsk
   def render_on renderer
