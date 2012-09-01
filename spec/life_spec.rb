@@ -1,4 +1,5 @@
 require 'life'
+require 'runner'
 
 require 'stringio'
 
