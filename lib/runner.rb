@@ -26,6 +26,7 @@ class StateTransition
   def initialize current_generation, listener
     @current_generation = current_generation
     @next_generation = Board.new
+    @generation_pair = GenerationPair.new(@current_generation, @next_generation)
     @listener = listener
   end
 
@@ -38,11 +39,18 @@ class StateTransition
 
   def each_interesting_position &block
     (0..4).each {|y|
-      (0..4).each {|x| process_current_and_future Position.new(x, y), &block }
+      (0..4).each {|x| @generation_pair.process Position.new(x, y), &block }
     }
   end
+end
 
-  def process_current_and_future position
+class GenerationPair
+  def initialize current_generation, next_generation
+    @current_generation = current_generation
+    @next_generation = next_generation
+  end
+
+  def process position
     @current_generation.process(position) {|current|
       @next_generation.process(position) {|future| yield current, future }
     }
