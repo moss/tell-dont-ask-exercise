@@ -50,7 +50,7 @@ end
 class Neighbors < TellDontAsk
   def initialize board, coordinates
     @board = board
-    @positions = Positions.new(Neighborhood.new(coordinates))
+    @positions = Positions.new(Neighborhood.new(Position.new(*coordinates)))
   end
 
   def neighbors &block
@@ -59,8 +59,8 @@ class Neighbors < TellDontAsk
 end
 
 class Neighborhood
-  def initialize coordinates
-    @position = Position.new(*coordinates)
+  def initialize position
+    @position = position
   end
 
   def each &block
