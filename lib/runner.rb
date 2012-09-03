@@ -22,7 +22,7 @@ class Runner < TellDontAsk
   end
 end
 
-class StateTransition
+class StateTransition < TellDontAsk
   def initialize current_generation, listener
     @next_generation = Board.new
     @generation_pair = GenerationPair.new(current_generation, @next_generation)
@@ -42,7 +42,7 @@ class StateTransition
   end
 end
 
-class GenerationPair
+class GenerationPair < TellDontAsk
   def initialize current_generation, next_generation
     @current_generation = current_generation
     @next_generation = next_generation

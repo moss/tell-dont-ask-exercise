@@ -58,7 +58,7 @@ class Neighbors < TellDontAsk
   end
 end
 
-class Neighborhood
+class Neighborhood < TellDontAsk
   def initialize position
     @position = position
   end

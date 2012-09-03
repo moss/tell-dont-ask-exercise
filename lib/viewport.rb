@@ -1,5 +1,8 @@
 require 'tell_dont_ask'
 
+# TODO I cannot begin to see how to test this in isolation.
+# Which is a code smell.
+
 class Viewport < TellDontAsk
   def initialize
     @rows = (0..4).collect {|y| ViewportRow.new(y) }
