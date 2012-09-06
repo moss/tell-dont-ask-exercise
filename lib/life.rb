@@ -7,7 +7,7 @@ class Dead < TellDontAsk
     renderer.dead_cell
   end
 
-  def update_count count
+  def update_neighbor_count count
   end
 
   def if_density_appropriate density
@@ -20,7 +20,7 @@ class Alive < TellDontAsk
     renderer.live_cell
   end
 
-  def update_count count
+  def update_neighbor_count count
     count.increment
   end
 
@@ -50,7 +50,7 @@ class Cell < TellDontAsk
   end
 
   def update_neighbor_count count
-    @aliveness.update_count(count)
+    @aliveness.update_neighbor_count(count)
   end
 end
 
