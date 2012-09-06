@@ -30,15 +30,19 @@ class StateTransition < TellDontAsk
   end
 
   def calculate_next_generation
-    each_interesting_position {|current, future| update_future_cell(current, future) }
-    @listener.new_board @next_generation
+    make_next_generation
+    notify_listener
   end
 
   private
 
-  def each_interesting_position &block
+  def make_next_generation
     grid = Grid.new(0..4, 0..4)
-    Positions.new(grid).on_board(@generation_pair, &block)
+    Positions.new(grid).on_board(@generation_pair) {|current, future| update_future_cell(current, future) }
+  end
+
+  def notify_listener
+    @listener.new_board @next_generation
   end
 
   def update_future_cell current, future
