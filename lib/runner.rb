@@ -30,7 +30,7 @@ class StateTransition < TellDontAsk
   end
 
   def calculate_next_generation
-    each_interesting_position {|current, future| current.update_future_self(future) }
+    each_interesting_position {|current, future| update_future_cell(current, future) }
     @listener.new_board @next_generation
   end
 
@@ -39,6 +39,12 @@ class StateTransition < TellDontAsk
   def each_interesting_position &block
     grid = Grid.new(0..4, 0..4)
     Positions.new(grid).on_board(@generation_pair, &block)
+  end
+
+  def update_future_cell current, future
+    density = PopulationDensity.new
+    current.neighbors {|neighbor| neighbor.update_neighbor_count density }
+    current.if_density_appropriate(density) { future.live! }
   end
 end
 

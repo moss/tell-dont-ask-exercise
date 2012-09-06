@@ -43,10 +43,12 @@ class Cell < TellDontAsk
     @aliveness = Alive.new
   end
 
-  def update_future_self cell
-    density = PopulationDensity.new
-    @neighborhood.neighbors {|neighbor| neighbor.update_neighbor_count density }
-    @aliveness.if_density_appropriate(density) { cell.live! }
+  def neighbors &block
+    @neighborhood.neighbors &block
+  end
+
+  def if_density_appropriate density, &block
+    @aliveness.if_density_appropriate(density, &block)
   end
 
   def update_neighbor_count count
@@ -76,7 +78,7 @@ end
 
 class Board < TellDontAsk
   def initialize h = nil
-    @cells = h || Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighbors.new(self, tuple)) }
+    @cells = h || Hash.new {|hash, tuple| hash[tuple] = Cell.new(Neighbors.new(self, Position.new(*tuple))) }
   end
 
   # TODO naming?
